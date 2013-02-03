@@ -40,8 +40,13 @@ Template.entry.rendered = function () {
             }));
             $('a.embedly', node).live("click", function (e) {
                 e.preventDefault();
-                oembed.html = '<script>alert("this should not be executed");</script>';
-                $(this).parents('blockquote').replaceWith(oembed.html);
+                oembed.html = '<script>alert("this should not be executed");</script><b>foo</b>';
+                $(this).parents('blockquote').replaceWith(html_sanitize(oembed.html, function (url) {
+                    if (/^https?:\/\//.test(url)) {
+                        return url
+                    }
+                    return null;
+                }));
             });
         }
     });
