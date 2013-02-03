@@ -11,7 +11,8 @@ if (Meteor.isServer) {
                     '_id' : 1,
                     'username' : 1,
                     'statusNetUserName' : 1,
-                    'statusNetUserId' : 1
+                    'statusNetUserId' : 1,
+                    'hasStatusNetSubscription' : 1
                 }
             }
         );

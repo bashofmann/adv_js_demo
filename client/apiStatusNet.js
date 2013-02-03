@@ -30,6 +30,20 @@ var statusNet = {
                 }
             );
         });
+    },
+    subscribe : function () {
+        var currentUser = Meteor.user();
+        if (!currentUser.hasStatusNetSubscription) {
+            Meteor.call('subscribeToHub', Meteor.BrowserStore.get('user_id'));
+            Meteor.users.update({_id : currentUser._id}, {'$set' : { hasStatusNetSubscription : true}});
+        }
+    },
+    unsubscribe : function () {
+        var currentUser = Meteor.user();
+        if (currentUser.hasStatusNetSubscription) {
+            Meteor.call('unsubscribeFromHub', Meteor.BrowserStore.get('user_id'));
+            Meteor.users.update({_id : currentUser._id}, {'$set' : { hasStatusNetSubscription : false}});
+        }
     }
 
 };

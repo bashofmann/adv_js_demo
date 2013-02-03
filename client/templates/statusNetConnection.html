@@ -2,6 +2,11 @@
     <div class="well">
         {{#if userId}}
             <a href="javascript:" class="btn disconnect">Disconnect from Status.net</a>
+            {{#if hasStatusNetSubscription}}
+                <a href="javascript:" class="btn unsubscribe">Unsubscribe from hub</a>
+            {{else}}
+                <a href="javascript:" class="btn subscribe">Subscribe to hub</a>
+            {{/if}}
             Status.net Username: {{statusNetUserName}}
         {{else}}
             <a href="javascript:" class="btn connect">Connect with Status.net</a>
