@@ -9,7 +9,9 @@ if (Meteor.isServer) {
         return Meteor.users.find({}, {
                 fields : {
                     '_id' : 1,
-                    'username' : 1
+                    'username' : 1,
+                    'statusNetUserName' : 1,
+                    'statusNetUserId' : 1
                 }
             }
         );
@@ -18,6 +20,23 @@ if (Meteor.isServer) {
     ShoutBoxEntries.allow({
         insert : function (userId, doc) {
             return userId && doc.userId === userId;
+        }
+    });
+
+    Meteor.users.allow({
+        update : function (userId, docs, fields, modifier) {
+            var result = true;
+            _.each(docs, function (doc) {
+                if (doc._id !== userId) {
+                    result = false;
+                }
+            });
+            _.each(fields, function (field) {
+                if (field === 'services' || field === 'username') {
+                    result = false;
+                }
+            });
+            return result;
         }
     });
 }

@@ -71,3 +71,21 @@ Template.input.events = {
         this.$('#text').attr('value', '');
     }
 };
+
+Template.statusNetConnection.events = {
+    'click a.connect' : function () {
+        window.open('http://dev.status.net:8080/index.php/api/oauth2/authorize?response_toke=token&client_id=' + keys.statusnet, 'StatusNetLoginPopup', 'width=400&height=400');
+    },
+    'click a.disconnect' : function () {
+        Meteor.BrowserStore.set("access_token");
+        Meteor.BrowserStore.set("user_id");
+    }
+};
+
+Template.statusNetConnection.userId = function () {
+    return Meteor.BrowserStore.get("user_id");
+};
+
+Template.statusNetConnection.statusNetUserName = function () {
+    return Meteor.user().statusNetUserName;
+};

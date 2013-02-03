@@ -15,4 +15,10 @@
     <div class="container">
         {{> stream}}
     </div>
+
+    {{#if currentUser}}
+    <div class="container">
+        {{> statusNetConnection}}
+    </div>
+    {{/if}}
 </body>

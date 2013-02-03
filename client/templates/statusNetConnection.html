@@ -1,0 +1,10 @@
+<template name="statusNetConnection">
+    <div class="well">
+        {{#if userId}}
+            <a href="javascript:" class="btn disconnect">Disconnect from Status.net</a>
+            Status.net Username: {{statusNetUserName}}
+        {{else}}
+            <a href="javascript:" class="btn connect">Connect with Status.net</a>
+        {{/if}}
+    </div>
+</template>
