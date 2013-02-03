@@ -24,6 +24,28 @@ Template.stream.entries = function () {
     return entries;
 };
 
+Template.entry.rendered = function () {
+    var node = this.firstNode;
+    $('dd a.oembed', node).embedly({
+        key : keys.embedly,
+        maxWidth : 450,
+        wmode : 'transparent',
+        display : function (oembed) {
+            if (oembed == null) {
+                return;
+            }
+            $(this).removeClass('oembed');
+            $(this).parent().after(Meteor.render(function () {
+                return Template.emedPreview(oembed);
+            }));
+            $('a.embedly', node).live("click", function (e) {
+                e.preventDefault();
+                $(this).parents('blockquote').replaceWith(oembed.html);
+            });
+        }
+    });
+};
+
 Template.input.events = {
     'submit form' : function (event) {
         var currentUserId;
