@@ -1,3 +1,29 @@
+var peer;
+
+Meteor.autorun(function() {
+    var currentUserId = Meteor.userId();
+    console.log('foo');
+    console.log(currentUserId);
+    if (currentUserId) {
+        console.log('Connecting to peer');
+        peer = new Peer(currentUserId, {host : 'localhost', port : 9006});
+        peer.on('connection', function (conn) {
+            console.log('open connection');
+            conn.on('data', function (data) {
+                console.log('Got data:', data);
+                $('.incomingMsgs').append(
+                    Meteor.render(function() {
+                        return Template.incomingMsg(data);
+                    })
+                );
+                $('.alert').alert();
+                console.log('closing');
+                conn.close();
+            });
+        });
+    }
+})
+
 Accounts.ui.config({
     passwordSignupFields : 'USERNAME_ONLY'
 });
@@ -12,6 +38,7 @@ Template.stream.entries = function () {
     ShoutBoxEntries.find({}, {}).forEach(function (entry) {
         var user = Meteor.users.findOne({ _id : entry.userId});
         entries.push({
+            userId : entry.userId,
             username : user ? user.username : entry.userId,
             text : linkify(Handlebars._escape(entry.text), {
                 callback : function (text, href) {
@@ -50,6 +77,53 @@ Template.entry.rendered = function () {
         }
     });
 };
+
+var sendChatMsgHandler = function (event) {
+    var targetUserId = $(event.currentTarget).attr('data-userId');
+    if (Meteor.userId() === targetUserId) {
+        return;
+    }
+    var node = Meteor.render(function () {
+        return Template.chat({
+            targetUserId : targetUserId
+        });
+    });
+    document.body.appendChild(node);
+
+    $('#chatModal').modal();
+
+    $('#chatModal').on('hidden', function () {
+        $('#chatModal').remove();
+    });
+};
+
+Template.incomingMsg.events = {
+    'click .sendMsg' : sendChatMsgHandler
+}
+Template.entry.events = {
+    'click .sendMsg' : sendChatMsgHandler
+};
+
+Template.chat.events = {
+    'click .send' : function () {
+        var user = Meteor.user();
+        var message = $('#message').attr('value');
+        var targetUserId = $('#targetUserId').attr('value');
+
+        console.log('connecting to ' + targetUserId);
+        var conn = peer.connect(targetUserId);
+        conn.on('open', function () {
+            console.log('sending ' + message);
+
+            conn.send({
+                message : message,
+                senderName : user.username,
+                senderId : user._id
+            });
+            $('#chatModal').modal('hide');
+        });
+    }
+}
 
 Template.input.events = {
     'submit form' : function (event) {
