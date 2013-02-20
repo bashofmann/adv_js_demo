@@ -1,0 +1,5 @@
+var keys = {
+    embedly : '',
+    statusnet : '',
+    wolframalpha : ''
+};
